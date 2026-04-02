@@ -14,7 +14,7 @@ const GuitarApp = () => {
   useMidiBindings();
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden text-zinc-100 sunburst-body">
+    <div className="flex flex-col min-h-screen overflow-x-hidden text-zinc-100 sunburst-body">
       
       {!isPlaying && (
         <div 
@@ -44,13 +44,13 @@ const GuitarApp = () => {
       <Controls />
       
       {/* The Instrument Surface */}
-      <div className="flex-1 flex flex-col overflow-hidden relative drop-shadow-[0_-20px_40px_rgba(0,0,0,0.8)] z-10">
+      <div className="flex-1 flex flex-col overflow-hidden relative drop-shadow-[0_-20px_40px_rgba(0,0,0,0.8)] z-10 min-h-[500px]">
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-20" />
         <Fretboard />
       </div>
 
       {/* 💰 AD PLACEMENT 2: Sticky Bottom/Footer Ad (Multiplex) */}
-      <div className="w-full bg-[#1c1c1c] border-t border-white/10 p-2 z-[60] overflow-y-auto max-h-[150px]">
+      <div className="w-full bg-[#1c1c1c] border-t border-white/10 p-6 z-[60]">
         <AdComponent slot="5895532575" format="autorelaxed" />
       </div>
       
