@@ -8,7 +8,7 @@ const Fretboard = () => {
   const strings = instrument === 'bass' ? BASS_STRINGS : GUITAR_STRINGS;
 
   return (
-    <div className="flex-1 flex flex-col p-6 sm:p-12 overflow-x-auto fretboard-scrollbar custom-scrollbar drop-shadow-2xl">
+    <div className="flex-1 flex flex-col p-2 sm:p-6 md:p-12 overflow-x-auto fretboard-scrollbar custom-scrollbar drop-shadow-2xl">
       
       {/* Perspective wrapper to pop the neck out */}
       <div className="flex-shrink-0 min-w-max relative mt-8 mb-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] rounded-r-3xl rounded-l-md border-y-[12px] border-b-[#1f1107] border-t-[#472714]">

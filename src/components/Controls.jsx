@@ -71,7 +71,7 @@ const Controls = () => {
     <div className="flex flex-col relative z-30 drop-shadow-2xl bg-zinc-950">
       
       {/* 1. The Amplifier Head Section */}
-      <div className="amp-tolex border-b-[6px] border-black/80 flex flex-col sm:flex-row justify-between items-center px-8 py-6 z-20 shadow-[0_15px_30px_rgba(0,0,0,0.9)] relative">
+      <div className="amp-tolex border-b-[6px] border-black/80 flex flex-col sm:flex-row justify-between items-center px-4 sm:px-8 py-6 gap-6 sm:gap-0 z-20 shadow-[0_15px_30px_rgba(0,0,0,0.9)] relative w-full overflow-x-hidden">
         
         {/* Instrument Switcher (Classic toggles) */}
         <div className="flex flex-col max-w-[200px] bg-zinc-900 border-2 border-zinc-700/50 p-3 rounded shadow-inner">
@@ -94,7 +94,7 @@ const Controls = () => {
         </div>
 
         {/* The Amp Knobs Surface */}
-        <div className="flex gap-10 bg-gradient-to-b from-zinc-800 to-zinc-900 p-4 rounded-lg border-t border-zinc-700 border-b-[3px] border-black shadow-xl">
+        <div className="flex gap-6 sm:gap-10 bg-gradient-to-b from-zinc-800 to-zinc-900 p-4 rounded-lg border-t border-zinc-700 border-b-[3px] border-black shadow-xl w-full sm:w-auto justify-center">
           <AmpKnob label="Master Vol" min={-30} max={10} value={volume} onChange={setVolume} />
           <AmpKnob label="Pre-Amp Dist" min={0} max={2} value={distortion} onChange={setDistortion} disabled={instrument !== 'electric'} />
         </div>
@@ -102,7 +102,7 @@ const Controls = () => {
       </div>
 
       {/* 2. The Floor Pedalboard Section */}
-      <div className="bg-[#1a1c23] p-6 pb-12 flex justify-center items-center overflow-x-auto custom-scrollbar border-b-[10px] border-[#0d0e12] shadow-[inset_0_20px_20px_rgba(0,0,0,0.5)]">
+      <div className="bg-[#1a1c23] p-4 sm:p-6 md:p-6 pb-12 flex justify-start lg:justify-center items-center overflow-x-auto custom-scrollbar border-b-[10px] border-[#0d0e12] shadow-[inset_0_20px_20px_rgba(0,0,0,0.5)]">
          
          <div className="flex bg-[#0f1015] p-4 rounded-xl shadow-2xl border border-[#2a2d36] items-end justify-center min-w-max">
            
@@ -135,7 +135,7 @@ const Controls = () => {
          </div>
 
          {/* MIDI Floor Box */}
-         <div className="ml-8 bg-[#2a2a2a] p-4 rounded-md border-t-4 border-[#111] shadow-2xl self-end mb-4 flex flex-col items-center">
+         <div className="ml-4 sm:ml-8 bg-[#2a2a2a] p-4 rounded-md border-t-4 border-[#111] shadow-2xl shrink-0 self-end mb-4 flex flex-col items-center">
             <span className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase mb-2">WebMIDI Interface</span>
             <div className="w-32 h-6 bg-red-950/40 border border-black/80 rounded flex items-center justify-center shadow-inner">
                <span className={`text-[9px] font-bold font-mono tracking-wider ${midiDevices.length > 0 ? 'text-green-500 shadow-[0_0_10px_#22c55e]' : 'text-red-900'}`}>

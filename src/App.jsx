@@ -21,7 +21,7 @@ const GuitarApp = () => {
           onClick={initAudio}
           className="absolute inset-0 z-[100] bg-black/80 backdrop-blur-md flex flex-col items-center justify-center text-center cursor-pointer transition-opacity duration-500"
         >
-          <div className="bg-[#2c1a0f] border-4 border-[#e8dcc4] p-8 shadow-2xl max-w-md transform transition-transform hover:scale-105 rounded-xl">
+          <div className="bg-[#2c1a0f] border-4 border-[#e8dcc4] p-6 sm:p-8 shadow-2xl w-[90%] sm:max-w-md transform transition-transform hover:scale-105 rounded-xl">
             <h2 className="text-3xl font-bold text-white mb-4 tracking-tight drop-shadow-md">Power On</h2>
             <p className="text-[#e8dcc4] mb-8 max-w-[250px] mx-auto text-sm leading-relaxed drop-shadow">
               Click to flip the standby switch and initialize the studio engine.

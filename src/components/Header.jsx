@@ -25,7 +25,7 @@ const Header = () => {
   };
 
   return (
-    <header className="amp-tolex border-b-8 border-[#3b1e08] shadow-[0_10px_30px_rgba(0,0,0,0.9)] px-6 py-4 flex items-center justify-between z-40 relative">
+    <header className="amp-tolex border-b-8 border-[#3b1e08] shadow-[0_10px_30px_rgba(0,0,0,0.9)] px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-40 relative">
       <div className="flex items-center gap-4">
         {/* Vintage Amp Badge Logo */}
         <div className="bg-gradient-to-b from-yellow-500 to-yellow-600 px-4 py-1.5 rounded-sm shadow-md border border-yellow-700 flex items-center gap-2">
