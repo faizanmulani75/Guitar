@@ -5,6 +5,7 @@ import Fretboard from './components/Fretboard';
 import { GuitarProvider, useGuitar } from './context/GuitarContext';
 import { useKeyboardBindings } from './hooks/useKeyboardBindings';
 import { useMidiBindings } from './hooks/useMidiBindings';
+import AdComponent from './components/AdComponent';
 
 const GuitarApp = () => {
   const { isPlaying, initAudio } = useGuitar();
@@ -34,12 +35,23 @@ const GuitarApp = () => {
 
       {/* The Amp Head (Header + Amp Knobs) and Pedalboard (Stompboxes) area */}
       <Header />
+
+      {/* 💰 AD PLACEMENT 1: Top Banner Ad - Great for visibility */}
+      <div className="w-full bg-black/30 border-y border-white/5 py-2">
+        <AdComponent slot="YOUR_TOP_AD_SLOT" />
+      </div>
+
       <Controls />
       
       {/* The Instrument Surface */}
       <div className="flex-1 flex flex-col overflow-hidden relative drop-shadow-[0_-20px_40px_rgba(0,0,0,0.8)] z-10">
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-20" />
         <Fretboard />
+      </div>
+
+      {/* 💰 AD PLACEMENT 2: Sticky Bottom/Footer Ad - High click rate */}
+      <div className="w-full bg-[#1c1c1c] border-t border-white/10 p-2 z-[60]">
+        <AdComponent slot="YOUR_BOTTOM_AD_SLOT" style={{ display: 'inline-block', width: '100%', height: '90px' }} />
       </div>
       
     </div>
