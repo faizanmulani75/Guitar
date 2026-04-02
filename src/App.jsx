@@ -36,9 +36,9 @@ const GuitarApp = () => {
       {/* The Amp Head (Header + Amp Knobs) and Pedalboard (Stompboxes) area */}
       <Header />
 
-      {/* 💰 AD PLACEMENT 1: Top Banner Ad - Great for visibility */}
+      {/* 💰 AD PLACEMENT 1: Top Banner Ad (Horizontal) */}
       <div className="w-full bg-black/30 border-y border-white/5 py-2">
-        <AdComponent slot="YOUR_TOP_AD_SLOT" />
+        <AdComponent slot="9834777587" format="auto" />
       </div>
 
       <Controls />
@@ -49,9 +49,9 @@ const GuitarApp = () => {
         <Fretboard />
       </div>
 
-      {/* 💰 AD PLACEMENT 2: Sticky Bottom/Footer Ad - High click rate */}
-      <div className="w-full bg-[#1c1c1c] border-t border-white/10 p-2 z-[60]">
-        <AdComponent slot="YOUR_BOTTOM_AD_SLOT" style={{ display: 'inline-block', width: '100%', height: '90px' }} />
+      {/* 💰 AD PLACEMENT 2: Sticky Bottom/Footer Ad (Multiplex) */}
+      <div className="w-full bg-[#1c1c1c] border-t border-white/10 p-2 z-[60] overflow-y-auto max-h-[150px]">
+        <AdComponent slot="5895532575" format="autorelaxed" />
       </div>
       
     </div>
