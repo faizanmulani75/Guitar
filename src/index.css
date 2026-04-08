@@ -1,50 +1,43 @@
 @import "tailwindcss";
 
 @theme {
-  --color-root: #0a0a0a;
+  --color-root: #040404;
 
-  /* Classic Sunburst gradient colors */
-  --color-sunburst-center: #d9772b;
-  --color-sunburst-mid: #9c3315;
-  --color-sunburst-edge: #1f0b06;
+  /* Premium "Midnight Bourbon" Sunburst Palette */
+  --color-sunburst-center: #eeba30; /* Gold */
+  --color-sunburst-mid: #632a0d;    /* Deep Amber */
+  --color-sunburst-edge: #0c0402;   /* Black hole */
+}
 
-  --animate-vibrate-1: vibrate1 0.1s linear infinite;
-  --animate-vibrate-2: vibrate2 0.1s linear infinite;
-  --animate-vibrate-3: vibrate3 0.1s linear infinite;
-  --animate-vibrate-4: vibrate4 0.1s linear infinite;
-  --animate-vibrate-5: vibrate5 0.1s linear infinite;
-  --animate-vibrate-6: vibrate6 0.1s linear infinite;
-  
-  @keyframes vibrate1 {
-    0%, 100% { transform: translateY(0); }
-    25% { transform: translateY(-0.5px); }
-    75% { transform: translateY(0.5px); }
-  }
-  @keyframes vibrate2 {
-    0%, 100% { transform: translateY(0); }
-    25% { transform: translateY(-0.8px); }
-    75% { transform: translateY(0.8px); }
-  }
-  @keyframes vibrate3 {
-    0%, 100% { transform: translateY(0); }
-    25% { transform: translateY(-1.2px); }
-    75% { transform: translateY(1.2px); }
-  }
-  @keyframes vibrate4 {
-    0%, 100% { transform: translateY(0); }
-    25% { transform: translateY(-1.5px); }
-    75% { transform: translateY(1.5px); }
-  }
-  @keyframes vibrate5 {
-    0%, 100% { transform: translateY(0); }
-    25% { transform: translateY(-2px); }
-    75% { transform: translateY(2px); }
-  }
-  @keyframes vibrate6 {
-    0%, 100% { transform: translateY(0); }
-    25% { transform: translateY(-2.5px); }
-    75% { transform: translateY(2.5px); }
-  }
+/* 🎸 String Vibration Animations (Standard CSS for maximum compatibility) */
+@keyframes stringVibrate {
+  0%, 100% { transform: translateY(0) scaleY(1) translateZ(0); }
+  50% { transform: translateY(-2px) scaleY(1.05) translateZ(0); }
+}
+
+@keyframes stringVibrateStrong {
+  0%, 100% { transform: translateY(0) scaleY(1) translateZ(0); }
+  50% { transform: translateY(-4px) scaleY(1.1) translateZ(0); }
+}
+
+@keyframes stringVibrateHeavy {
+  0%, 100% { transform: translateY(0) scaleY(1) translateZ(0); }
+  50% { transform: translateY(-6px) scaleY(1.15) translateZ(0); }
+}
+
+.string-vibrate-light {
+  animation: stringVibrate 0.1s ease-in-out infinite;
+  will-change: transform;
+}
+
+.string-vibrate-medium {
+  animation: stringVibrateStrong 0.08s ease-in-out infinite;
+  will-change: transform;
+}
+
+.string-vibrate-heavy {
+  animation: stringVibrateHeavy 0.06s ease-in-out infinite;
+  will-change: transform;
 }
 
 @layer base {
@@ -54,102 +47,107 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Outfit', sans-serif;
+    user-select: none; /* Disable text selection globally */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    /* Force GPU for the entire app body compositor */
+    transform: translateZ(0);
   }
 }
 
-/* Hyper-Realistic Textures */
-
-/* The Sunburst Finish applied to the app wrapper */
-.sunburst-body {
-  background: radial-gradient(circle at center, var(--color-sunburst-center) 0%, var(--color-sunburst-mid) 40%, var(--color-sunburst-edge) 80%, #000 100%);
-  box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+/* 💎 Premium Glassmorphism (Optimized) */
+.glass-panel {
+  background: rgba(18, 18, 18, 0.6);
+  backdrop-filter: blur(10px); /* Reduced from 20px for performance */
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-/* Rosewood/Ebony Fretboard surface */
-.rosewood-neck {
-  background-color: #2c1a0f;
+.glass-pill {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 🎸 Hyper-Realistic Textures */
+
+.studio-backdrop {
+  background: radial-gradient(circle at center, var(--color-sunburst-center) 0%, var(--color-sunburst-mid) 35%, var(--color-sunburst-edge) 85%, #000 100%);
+  position: relative;
+}
+
+.studio-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background-image: 
-    linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(60,30,15, 0.2) 20%, rgba(60,30,15, 0.2) 80%, rgba(0,0,0,0.8) 100%),
-    repeating-linear-gradient(88deg, transparent, rgba(0,0,0,0.1) 4px, transparent 8px);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.05);
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 40%);
+  pointer-events: none;
 }
 
-/* Metallic Nickel Fret Wire */
+.ebony-fretboard {
+  background-color: #120a06;
+  background-image: 
+    linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(44,26,15, 0.1) 15%, rgba(44,26,15, 0.1) 85%, rgba(0,0,0,0.9) 100%),
+    repeating-linear-gradient(88deg, transparent, rgba(0,0,0,0.1) 3px, transparent 6px);
+  box-shadow: 
+    0 20px 50px rgba(0,0,0,0.9), 
+    inset 0 1px 1px rgba(255,255,255,0.05);
+  /* GPU acceleration for the neck surface */
+  transform: translateZ(0);
+}
+
 .fret-wire {
-  background: linear-gradient(90deg, #444 0%, #e0e0e0 20%, #fff 50%, #c0c0c0 80%, #333 100%);
-  box-shadow: 
-    4px 0 6px -1px rgba(0,0,0,0.9),
-    -1px 0 2px rgba(255,255,255,0.3);
+  background: linear-gradient(90deg, #333 0%, #d4d4d4 15%, #ffffff 50%, #b8b8b8 85%, #222 100%);
+  box-shadow: 2px 0 4px rgba(0,0,0,0.7);
 }
 
-/* Bone Nut at Fret 0 */
 .bone-nut {
-  background: linear-gradient(90deg, #b0a89a 0%, #eee8dd 50%, #d4ccc0 100%);
-  box-shadow: 
-    3px 0 8px rgba(0,0,0,0.8), 
-    inset -2px 0 4px rgba(255,255,255,0.6), 
-    inset 2px 0 4px rgba(0,0,0,0.2);
+  background: linear-gradient(90deg, #9b9487 0%, #f7f3ec 40%, #e0d8ca 60%, #b0a89a 100%);
+  box-shadow: 2px 0 8px rgba(0,0,0,0.8);
 }
 
-/* Mother-of-Pearl Inlays */
-.pearl-inlay {
-  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e8e8e8 30%, #dcdcdc 60%, #a9a9a9 100%);
-  box-shadow: 
-    inset 0 3px 5px rgba(0,0,0,0.8), 
-    inset 0 -1px 2px rgba(255,255,255,0.2),
-    0 1px 1px rgba(255,255,255,0.05);
+.mother-of-pearl {
+  background: radial-gradient(circle at 35% 35%, #fff 0%, #f0f0f0 20%, #e0e0e0 50%, #c0c0c0 100%);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+  border: 1px solid rgba(0,0,0,0.2);
 }
 
-/* String Textures */
 .string-wound {
-  /* Bronze wrapped heavy acoustic/bass strings */
-  background: repeating-linear-gradient(
-    70deg,
-    #b88a44,
-    #9e7230 1px,
-    #5c3d11 2px
-  );
-  box-shadow: 0 6px 10px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.4);
+    background: repeating-linear-gradient(
+      65deg,
+      #9b7b4a,
+      #c4a162 1px,
+      #7d6139 2px
+    );
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
 }
 
 .string-plain {
-  /* Smooth silvery steel high strings */
-  background: linear-gradient(
-    180deg,
-    #555 0%,
-    #eee 40%,
-    #fff 60%,
-    #333 100%
-  );
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    background: linear-gradient( 180deg, #444 0%, #e8e8e8 45%, #ffffff 55%, #222 100% );
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
 }
 
-/* The dark fret highlighting strictly simulating a fingered press */
-.fret-pressed {
-  box-shadow: inset 0 0 30px rgba(0,0,0,0.8), inset 0 0 10px rgba(217, 119, 43, 0.4);
+.fret-active {
+  background: radial-gradient(circle at center, rgba(238, 186, 48, 0.08) 0%, transparent 70%);
+  box-shadow: inset 0 0 20px rgba(238, 186, 48, 0.1);
 }
 
-/* Amplifier Tolex Leather Texture */
-.amp-tolex {
-  background-color: #1a1a1a;
-  background-image: radial-gradient(#333 1px, transparent 1px);
-  background-size: 4px 4px;
+/* 🎛️ Amp/Studio UI Utilities */
+.status-glow-green {
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4), inset 0 0 2px rgba(34, 197, 94, 0.6);
 }
 
-/* Realistic Rotary Knob */
-.dial-knob {
-  background: radial-gradient(circle, #333 0%, #111 100%);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 5px 10px rgba(0,0,0,0.8);
-  border: 1px solid #000;
-}
-.dial-indicator {
-  background: #fff;
-  box-shadow: 0 0 4px #fff;
+.status-glow-red {
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4), inset 0 0 2px rgba(239, 68, 68, 0.6);
 }
 
-/* Guitar Stompbox Pedal */
-.stompbox {
-  box-shadow: inset 0 2px 2px rgba(255,255,255,0.3), inset 0 -4px 6px rgba(0,0,0,0.4), 0 10px 15px rgba(0,0,0,0.5);
-  border-top-width: 2px;
+.knob-cap {
+  background: radial-gradient(circle at 40% 40%, #444 0%, #111 80%, #000 100%);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.6);
 }

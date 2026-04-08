@@ -48,3 +48,19 @@ export function getNoteForFret(openNoteString, fretIndex) {
   
   return `${NOTES[newIndex]}${octave + octaveIncrease}`;
 }
+
+/**
+ * Chord Fingerings (Index 0 = String 1/E4, Index 5 = String 6/E2)
+ * value: fretIndex, null: mute
+ */
+export const CHORD_DATA = {
+    'none': [null, null, null, null, null, null],
+    'C Major': [0, 1, 0, 2, 3, null],
+    'G Major': [3, 0, 0, 0, 2, 3],
+    'D Major': [2, 3, 2, 0, null, null],
+    'A Minor': [0, 1, 2, 2, 0, null],
+    'E Major': [0, 0, 1, 2, 2, 0],
+    'E Minor': [0, 0, 0, 2, 2, 0],
+    'D Minor': [1, 3, 2, 0, null, null],
+    'F Major': [1, 1, 2, 3, 3, 1] // Barre chord
+};

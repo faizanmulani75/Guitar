@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Guitar, Maximize, Minimize } from 'lucide-react';
+import { Guitar, Music, Radio, Zap } from 'lucide-react';
+import { useGuitar } from '../context/GuitarContext';
 
 const Header = () => {
+  const { isPlaying } = useGuitar();
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -12,45 +14,39 @@ const Header = () => {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
-        console.warn(`Error attempting to enable full-screen mode: ${err.message}`);
-      });
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
-    }
-  };
-
   return (
-    <header className="amp-tolex border-b-8 border-[#3b1e08] shadow-[0_10px_30px_rgba(0,0,0,0.9)] px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between z-40 relative">
-      <div className="flex items-center gap-4">
-        {/* Vintage Amp Badge Logo */}
-        <div className="bg-gradient-to-b from-yellow-500 to-yellow-600 px-4 py-1.5 rounded-sm shadow-md border border-yellow-700 flex items-center gap-2">
-          <Guitar size={18} className="text-yellow-950" />
-          <h1 className="text-lg font-black text-yellow-950 tracking-tighter uppercase italic drop-shadow-sm">Virtuoso</h1>
+    <header className="px-6 py-5 flex items-center justify-between z-50 relative bg-black/40 backdrop-blur-md border-b border-white/5">
+      <div className="flex items-center gap-6">
+        {/* Premium Minimalist Branding */}
+        <div className="flex items-center gap-3 group">
+          <div className="w-10 h-10 bg-gradient-to-tr from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-900/40 group-hover:scale-110 transition-transform duration-300">
+            <Music size={22} className="text-black" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white tracking-widest uppercase">Virtuoso</h1>
+            <p className="text-[10px] text-amber-500/80 font-bold tracking-[0.2em] uppercase -mt-1">Studio Edition</p>
+          </div>
         </div>
-        {/* <p className="text-zinc-500 text-xs uppercase tracking-widest font-mono font-bold hidden sm:block">Model 1959 Simulator</p> */}
       </div>
       
-      <div className="flex items-center gap-4">
-        {/* Keyboard Layout Helper */}
-        <div className="font-mono text-[9px] text-[#b88a44] bg-black/50 px-3 py-1.5 rounded border border-[#3b1e08] hidden lg:block text-right">
-          <span className="text-zinc-500 uppercase block mb-1">Keyboard Layout:</span>
-          <span className="text-zinc-300">Columns <kbd className="text-white bg-black px-1">1-6</kbd> = Strings (Low to High)</span><br/>
-          <span className="text-zinc-300">Rows <kbd className="text-white bg-black px-1">1 Q A Z</kbd> = Frets (0-3)</span>
+      <div className="flex items-center gap-6">
+        {/* Status Indicators */}
+        <div className="hidden md:flex items-center gap-4 border-l border-white/10 pl-6 h-10">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-green-500 status-glow-green animate-pulse' : 'bg-red-500 status-glow-red'}`} />
+            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Audio Engine</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Low Latency</span>
+          </div>
         </div>
 
-        {/* Fullscreen Toggle Button */}
-        {/* <button 
-          onClick={toggleFullScreen}
-          title="Toggle Fullscreen"
-          className="bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 p-2 rounded-md border border-zinc-700/50 shadow-inner transition-colors focus:outline-none"
-        >
-          {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-        </button> */}
+        {/* Info Pill */}
+        <div className="glass-pill px-4 py-2 rounded-full flex items-center gap-3">
+            <Zap size={14} className="text-amber-500" />
+            <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Midi Active</span>
+        </div>
       </div>
     </header>
   );

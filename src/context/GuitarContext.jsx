@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import engine from '../audio/SoundEngine';
+import { CHORD_DATA, getNoteForFret, GUITAR_STRINGS } from '../utils';
 
 export const GuitarContext = createContext();
 
@@ -16,14 +17,18 @@ export const GuitarProvider = ({ children }) => {
   const [volume, setVolume] = useState(0); 
   const [distortion, setDistortion] = useState(0.8);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isEngineLoading, setIsEngineLoading] = useState(false);
   
   // Advanced features
-  const [transpose, setTranspose] = useState(0); // semitones
-  const [octave, setOctave] = useState(0); // full octaves (+1 = +12 semitones)
+  const [transpose, setTranspose] = useState(0); 
+  const [octave, setOctave] = useState(0); 
   const [reverbEnabled, setReverbEnabled] = useState(true);
-  const [is12String, setIs12String] = useState(0); // 0 = standard, 1 = 12-string mode (Additional Reeds)
+  const [is12String, setIs12String] = useState(0); 
   const [midiDevices, setMidiDevices] = useState([]);
   
+  // Chord Sheet State
+  const [selectedChord, setSelectedChord] = useState('none');
+
   const [activeStrings, setActiveStrings] = useState(new Set());
   const [activeFrets, setActiveFrets] = useState(new Map());
 
@@ -34,17 +39,25 @@ export const GuitarProvider = ({ children }) => {
   useEffect(() => { engine.setReverb(reverbEnabled); }, [reverbEnabled]);
 
   const initAudio = async () => {
-    if (!isPlaying) {
-      await engine.initialize();
-      engine.setReverb(reverbEnabled);
-      setIsPlaying(true);
+    if (!isPlaying && !isEngineLoading) {
+      setIsEngineLoading(true);
+      try {
+        await engine.initialize();
+        setIsPlaying(true);
+      } catch (error) {
+        console.error("Failed to initialize audio engine", error);
+      } finally {
+        setIsEngineLoading(false);
+      }
     }
   };
 
   const playString = useCallback((stringIndex, note, fretIndex) => {
-    if (!isPlaying) initAudio();
+    if (!isPlaying) {
+        initAudio();
+        return;
+    }
     
-    // Play the core note through engine, letting engine handle transposition calculations
     engine.playNote(note, stringIndex, transpose, octave, is12String === 1);
     
     // Visuals
@@ -62,8 +75,32 @@ export const GuitarProvider = ({ children }) => {
         if (next.get(stringIndex) === fretIndex) next.delete(stringIndex);
         return next;
       });
-    }, 500);
+    }, 1000);
   }, [isPlaying, transpose, octave, is12String]); // Intentionally not capturing initAudio to avoid massive recreations
+
+  // Studio Auto-Strum Logic
+  const playChord = useCallback(async () => {
+    if (!isPlaying) {
+        await initAudio();
+        return;
+    }
+    if (selectedChord === 'none') return;
+
+    const fingerings = CHORD_DATA[selectedChord];
+    if (!fingerings) return;
+
+    // Realistic sequential strum (from top string to bottom)
+    for (let i = 5; i >= 0; i--) {
+        const fretIndex = fingerings[i];
+        if (fretIndex !== null) {
+            const openNote = GUITAR_STRINGS[i].note;
+            const noteToPlay = getNoteForFret(openNote, fretIndex);
+            playString(i, noteToPlay, fretIndex);
+            // Slight delay (arpeggio) for realism (50ms)
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+    }
+  }, [selectedChord, isPlaying, playString]);
 
   const stopString = useCallback((stringIndex) => {
     engine.stopNote(stringIndex);
@@ -80,7 +117,7 @@ export const GuitarProvider = ({ children }) => {
     setMidiDevices(prev => prev.filter(d => d.id !== id));
   }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     instrument, setInstrument,
     volume, setVolume,
     distortion, setDistortion,
@@ -88,11 +125,17 @@ export const GuitarProvider = ({ children }) => {
     octave, setOctave,
     reverbEnabled, setReverbEnabled,
     is12String, setIs12String,
+    selectedChord, setSelectedChord,
+    playChord,
     midiDevices, addMidiDevice, removeMidiDevice,
-    isPlaying, initAudio,
+    isPlaying, isEngineLoading, initAudio,
     playString, stopString,
     activeStrings, activeFrets
-  };
+  }), [
+    instrument, volume, distortion, transpose, octave, reverbEnabled, 
+    is12String, selectedChord, playChord, midiDevices, isPlaying, isEngineLoading, playString, stopString, 
+    activeStrings, activeFrets, addMidiDevice, removeMidiDevice
+  ]);
 
   return (
     <GuitarContext.Provider value={value}>

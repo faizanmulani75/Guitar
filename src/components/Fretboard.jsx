@@ -8,19 +8,22 @@ const Fretboard = () => {
   const strings = instrument === 'bass' ? BASS_STRINGS : GUITAR_STRINGS;
 
   return (
-    <div className="flex-1 flex flex-col p-2 sm:p-6 md:p-12 overflow-x-auto fretboard-scrollbar custom-scrollbar drop-shadow-2xl">
+    <div className="flex-1 flex flex-col p-2 sm:p-6 md:p-8 w-full max-w-full drop-shadow-2xl overflow-hidden">
       
-      {/* Perspective wrapper to pop the neck out */}
-      <div className="flex-shrink-0 min-w-max relative mt-8 mb-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] rounded-r-3xl rounded-l-md border-y-[12px] border-b-[#1f1107] border-t-[#472714]">
+      {/* 🎸 The Neck: Perspective-warped rosewood block */}
+      <div className="w-full relative mt-4 mb-4 shadow-[0_40px_100px_-20px_rgba(0,0,0,1)] rounded-r-3xl rounded-l-md border-y-[14px] border-b-black border-t-[#222]">
         
-        {/* The solid block of Rosewood/Ebony for the neck */}
-        <div className="absolute inset-0 rosewood-neck rounded-r-2xl" />
+        {/* Deep Ebony/Rosewood Surface */}
+        <div className="absolute inset-0 ebony-fretboard rounded-r-2xl" />
 
-        {/* Bound edges (common on premium guitars like Les Pauls) */}
-        <div className="absolute inset-0 border-y-[3px] border-r-[3px] border-[#e8dcc4] rounded-r-2xl opacity-80 z-0 pointer-events-none mix-blend-overlay" />
+        {/* Bound edges (Classic Ivory Binding) */}
+        <div className="absolute inset-0 border-y-[4px] border-r-[4px] border-[#ede4d5] rounded-r-2xl opacity-90 z-20 pointer-events-none shadow-inner" />
 
-        {/* Strings Container */}
-        <div className="relative flex flex-col z-10 w-full rounded-r-2xl pr-8 py-2">
+        {/* Ambient Neck Lighting */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 z-10 pointer-events-none rounded-r-2xl" />
+
+        {/* Strings Layer */}
+        <div className="relative flex flex-col z-30 w-full rounded-r-2xl pr-4 py-3">
           {strings.map((stringData, index) => (
             <GuitarString 
               key={`string-${index}`} 

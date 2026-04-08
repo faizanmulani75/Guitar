@@ -1,78 +1,81 @@
 import * as Tone from 'tone';
 
+// High-quality sample maps for professional guitar tones
+const SAMPLE_MAPS = {
+  acoustic: {
+    baseUrl: "https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/acoustic_guitar_nylon-mp3/",
+    notes: { "A2": "A2.mp3", "C3": "C3.mp3", "E3": "E3.mp3", "G3": "G3.mp3", "A3": "A3.mp3", "C4": "C4.mp3", "E4": "E4.mp3", "G4": "G4.mp3" }
+  },
+  electric: {
+    baseUrl: "https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/electric_guitar_clean-mp3/",
+    notes: { "A2": "A2.mp3", "C3": "C3.mp3", "E3": "E3.mp3", "G3": "G3.mp3", "A3": "A3.mp3", "C4": "C4.mp3", "E4": "E4.mp3", "G4": "G4.mp3" }
+  },
+  bass: {
+    baseUrl: "https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/electric_bass_finger-mp3/",
+    notes: { "E1": "E1.mp3", "G1": "G1.mp3", "A1": "A1.mp3", "C2": "C2.mp3", "E2": "E2.mp3", "G2": "G2.mp3", "A2": "A2.mp3" }
+  }
+};
+
 class SoundEngine {
   constructor() {
     this.isInitialized = false;
     this.audioContextStarted = false;
+    this.isLoading = false;
     
-    // Master volume
-    this.masterVolume = new Tone.Volume(-5).toDestination();
+    // Master Processing Chain
+    this.masterVolume = new Tone.Volume(-8).toDestination();
+    this.limiter = new Tone.Limiter(-2).connect(this.masterVolume);
+    this.compressor = new Tone.Compressor({ threshold: -20, ratio: 4, attack: 0.01, release: 0.25 }).connect(this.limiter);
     
-    // Effects
-    this.distortion = new Tone.Distortion(0.8);
-    this.chorus = new Tone.Chorus(4, 2.5, 0.5);
-    this.eq = new Tone.EQ3({ low: 2, mid: 0, high: 2 });
-    
-    // Configurable Reverb
-    this.reverb = new Tone.Reverb(1.5);
-    this.cleanReverb = new Tone.Reverb(2);
+    // Global EQ & FX
+    this.eq = new Tone.EQ3({ low: 2, mid: -1, high: 2 }).connect(this.compressor);
+    this.reverb = new Tone.Reverb({ decay: 2.5, preDelay: 0.01, wet: 0.4 }).connect(this.eq);
+    this.chorus = new Tone.Chorus(2, 1.5, 0.3).connect(this.reverb);
+    this.distortion = new Tone.Distortion(0.4).connect(this.chorus);
 
-    // Default connections (Reverb will be dynamically bypassed via toggle)
-    this.distortion.connect(this.chorus);
-    this.chorus.connect(this.reverb);
-    this.reverb.connect(this.eq);
-    this.eq.connect(this.masterVolume);
-    this.cleanReverb.connect(this.masterVolume);
+    // Dynamic Filter for natural string damping
+    this.dampingFilter = new Tone.Filter(8000, "lowpass").connect(this.distortion);
 
-    // 12 synths per instrument category. 0-5 = main strings, 6-11 = 12-string octave doubles
-    this.synths = {
-      acoustic: [],
-      electric: [],
-      bass: []
+    this.samplers = {
+      acoustic: null,
+      electric: null,
+      bass: null
     };
     
     this.currentInstrument = 'acoustic';
   }
 
-  async initialize() {
-    if (this.isInitialized) return;
+  async initialize(onProgress) {
+    if (this.isInitialized || this.isLoading) return;
+    this.isLoading = true;
     
     await Tone.start();
     this.audioContextStarted = true;
 
+    // Load multiple instruments in parallel
+    const loadPromises = Object.entries(SAMPLE_MAPS).map(([key, config]) => {
+        return new Promise((resolve) => {
+            this.samplers[key] = new Tone.Sampler({
+                urls: config.notes,
+                baseUrl: config.baseUrl,
+                onload: () => {
+                    console.log(`Sampler loaded: ${key}`);
+                    resolve();
+                },
+                onerror: (err) => {
+                    console.error(`Error loading samples for ${key}:`, err);
+                    resolve(); // Proceed anyway
+                }
+            }).connect(key === 'electric' ? this.dampingFilter : this.reverb);
+        });
+    });
+
+    await Promise.all(loadPromises);
     await this.reverb.generate();
-    await this.cleanReverb.generate();
-
-    for (let i = 0; i < 12; i++) {
-      // Acoustic
-      const acousticSynth = new Tone.Synth({
-        oscillator: { type: 'pwm', modulationFrequency: 0.2 },
-        envelope: { attack: 0.01, decay: 1.5, sustain: 0.2, release: 2 }
-      }).connect(this.cleanReverb);
-      this.synths.acoustic.push(acousticSynth);
-
-      // Electric
-      const electricSynth = new Tone.FMSynth({
-        modulationIndex: 12.22,
-        envelope: { attack: 0.01, decay: 2, sustain: 0.5, release: 1.5 },
-        modulation: { type: 'square' },
-        modulationEnvelope: { attack: 0.02, decay: 0.2, sustain: 1, release: 0.5 }
-      }).connect(this.distortion);
-      this.synths.electric.push(electricSynth);
-
-      // Bass
-      const bassSynth = new Tone.FMSynth({
-        harmonicity: 0.5,
-        modulationIndex: 1.2,
-        oscillator: { type: 'sine' },
-        envelope: { attack: 0.05, decay: 1, sustain: 0.8, release: 2 },
-        modulation: { type: 'sawtooth' },
-        modulationEnvelope: { attack: 0.05, decay: 0.5, sustain: 0.8, release: 2 }
-      }).connect(this.cleanReverb); 
-      this.synths.bass.push(bassSynth);
-    }
     
     this.isInitialized = true;
+    this.isLoading = false;
+    if (onProgress) onProgress(100);
   }
 
   setInstrument(instrument) {
@@ -82,59 +85,48 @@ class SoundEngine {
   }
 
   setVolume(db) {
-    this.masterVolume.volume.rampTo(db, 0.1);
+    this.masterVolume.volume.rampTo(db - 8, 0.1);
   }
 
   setDistortion(amount) {
     this.distortion.distortion = amount;
+    // For clean acoustic, keep distortion low/off
+    this.distortion.wet.value = this.currentInstrument === 'electric' ? 1 : 0.2;
   }
 
   setReverb(enabled) {
-    // Dynamically wire the wetness of the reverb to act as a bypass switch
-    const wetness = enabled ? 1 : 0;
-    this.reverb.wet.value = wetness;
-    this.cleanReverb.wet.value = wetness;
+    this.reverb.wet.rampTo(enabled ? 0.4 : 0, 0.1);
   }
 
   playNote(originalNote, stringIndex, transpose = 0, octave = 0, is12String = false) {
-    if (!this.audioContextStarted) return;
+    if (!this.audioContextStarted || !this.isInitialized) return;
     
-    const stringBank = this.synths[this.currentInstrument];
-    if (!stringBank) return;
+    const sampler = this.samplers[this.currentInstrument];
+    if (!sampler) return;
 
-    // Mathematical Pitch Calculation using Tone Frequency manipulation
+    // Pitch logic: Use shifted midi note
     const baseMidi = Math.round(Tone.Frequency(originalNote).toMidi());
-    
-    // Add transpose (semitones) + octave shifts (12 semitones)
     const shiftedMidi = baseMidi + transpose + (octave * 12);
-    const finalNoteFreq = Tone.Frequency(shiftedMidi, "midi").toFrequency();
+    const finalNote = Tone.Frequency(shiftedMidi, "midi").toNote();
 
-    // Trigger main string
-    const mainSynth = stringBank[stringIndex];
-    if (mainSynth) {
-      mainSynth.triggerRelease();
-      mainSynth.triggerAttackRelease(finalNoteFreq, "4n", Tone.now());
-    }
+    // Trigger Note with random velocity for human feel
+    const velocity = 0.7 + Math.random() * 0.3;
+    sampler.triggerAttack(finalNote, Tone.now(), velocity);
 
-    // Trigger secondary string (Additional Reeds / 12-String simulator paired string)
+    // 12-String / Octave Double Logic
     if (is12String) {
-      const doubleSynth = stringBank[stringIndex + 6];
-      if (doubleSynth) {
-        // Shifting 12 semitones up (+1 octave) exactly like a secondary reed or 12-string pair
-        const doubleNoteFreq = Tone.Frequency(shiftedMidi + 12, "midi").toFrequency();
-        doubleSynth.triggerRelease();
-        doubleSynth.triggerAttackRelease(doubleNoteFreq, "4n", Tone.now() + 0.01); // Slight 10ms offset for realistic doubled plucking strum delay
-      }
+      const doubleNote = Tone.Frequency(shiftedMidi + 12, "midi").toNote();
+      sampler.triggerAttack(doubleNote, Tone.now() + 0.015, velocity * 0.7);
     }
   }
 
   stopNote(stringIndex) {
-    if (!this.audioContextStarted) return;
-    const stringBank = this.synths[this.currentInstrument];
-    if (!stringBank) return;
+    // With samplers, we usually let the natural decay ring 
+    // but we can release if needed for rapid muting
+  }
 
-    if (stringBank[stringIndex]) stringBank[stringIndex].triggerRelease();
-    if (stringBank[stringIndex + 6]) stringBank[stringIndex + 6].triggerRelease(); // kill double string too
+  stopAll() {
+    Object.values(this.samplers).forEach(s => s && s.releaseAll());
   }
 }
 

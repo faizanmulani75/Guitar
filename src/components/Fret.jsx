@@ -1,36 +1,56 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useGuitar } from '../context/GuitarContext';
-import { cn, getNoteForFret } from '../utils';
+import { cn, getNoteForFret, CHORD_DATA } from '../utils';
 
 const DOT_FRETS = [3, 5, 7, 9, 15, 17, 19, 21];
 
-const Fret = ({ stringIndex, fretIndex, openNote, stringThickness }) => {
-  const { playString, activeFrets } = useGuitar();
+const Fret = memo(({ stringIndex, fretIndex, openNote, stringThickness }) => {
+  const { playString, activeFrets, selectedChord } = useGuitar();
   
   const isActive = activeFrets.get(stringIndex) === fretIndex;
   const isOpenString = fretIndex === 0;
   const noteContent = getNoteForFret(openNote, fretIndex);
 
-  // If thickness > 2.5, it's typically a wound string (E, A, D) visually
-  const isWound = stringThickness > 2.5;
+  // Chord Ghost Marker Logic
+  const chordFingerings = CHORD_DATA[selectedChord];
+  const isGhostMarker = chordFingerings && chordFingerings[stringIndex] === fretIndex;
 
-  const handleClick = (e) => {
+  const handleInteraction = (e) => {
+    // Prevent default to avoid any potential selection/drag issues
+    e.preventDefault();
     playString(stringIndex, noteContent, fretIndex);
+  };
+
+  const handleMouseEnter = (e) => {
+    // Only play if the left mouse button is held down (buttons === 1)
+    if (e.buttons === 1) {
+      playString(stringIndex, noteContent, fretIndex);
+    }
   };
 
   if (isOpenString) {
     return (
       <div 
-        onClick={handleClick}
-        className="w-16 flex-shrink-0 flex items-center justify-center cursor-pointer relative bg-gradient-to-l from-[#1f1107] to-[#120a04]"
+        onMouseDown={handleInteraction}
+        onMouseEnter={handleMouseEnter}
+        className="flex-[0.8] min-w-8 flex-shrink-0 flex items-center justify-center cursor-crosshair relative bg-gradient-to-l from-[#0c0603] to-[#040201] group border-r border-white/5"
       >
-        {/* The Nut: A thick vertical polished bone pillar that the strings sit on */}
-        <div className="absolute right-0 w-3 h-[110%] top-[-5%] bone-nut z-20 rounded-sm" />
+        <div className="absolute right-0 w-3 h-[104%] top-[-2%] bone-nut z-40 rounded-sm" />
         
-        {/* Open string background sheen */}
-        <div className={cn("absolute inset-0 bg-white/0 transition-colors", isActive ? "bg-amber-500/10" : "hover:bg-white/5")} />
+        <div className={cn(
+          "absolute inset-0 transition-opacity duration-300", 
+          isActive ? "bg-amber-500/20 opacity-100" : "bg-white/0 group-hover:bg-white/5"
+        )} />
+
+        {/* Open String Ghost Marker */}
+        {isGhostMarker && !isActive && (
+            <div className="absolute inset-0 bg-amber-500/10 animate-pulse z-10" />
+        )}
         
-        <span className="text-[#a08b76] font-mono text-xs z-30 font-bold drop-shadow-md">
+        <span className={cn(
+          "font-mono text-[9px] sm:text-xs z-50 font-bold transition-all duration-200 tracking-tighter",
+          isActive ? "text-amber-400 scale-110 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]" : "text-zinc-600 group-hover:text-zinc-400"
+        )}>
           {noteContent}
         </span>
       </div>
@@ -40,58 +60,43 @@ const Fret = ({ stringIndex, fretIndex, openNote, stringThickness }) => {
   const isDoubleDot = fretIndex === 12 || fretIndex === 24;
   const isSingleDot = DOT_FRETS.includes(fretIndex);
 
-  // Distribute Fret spacing logarithmically (frets get closer together towards the body)
-  // But a simple flex-1 looks fine for a generic web app. We'll stick to flex-1 with min-width.
-
   return (
     <div 
-      onClick={handleClick}
+      onMouseDown={handleInteraction}
+      onMouseEnter={handleMouseEnter}
       className={cn(
-        "relative flex-1 min-w-[55px] cursor-pointer group flex items-center justify-center border-r-[3px] border-black/40 overflow-visible",
-        isActive ? "fret-pressed" : "hover:shadow-[inset_0_0_20px_rgba(255,255,255,0.05)]"
+        "relative flex-1 min-w-[10px] cursor-crosshair group flex items-center justify-center border-r-[1px] border-black/60 overflow-visible transition-colors duration-300",
+        isActive ? "fret-active" : "hover:bg-white/5"
       )}
     >
-      {/* Photorealistic Fret Wire (Silver/Nickel) capping the right side of the fret space */}
-      <div className="absolute right-[-3px] w-[3px] h-[105%] top-[-2.5%] fret-wire z-10" />
+      <div className="absolute right-[-2px] w-[4px] h-[102%] top-[-1%] fret-wire z-40 rounded-full" />
 
-      {/* Mother of Pearl Fret Markers */}
-      {/* We uniquely place the markers inside String 2 (middle of board) or straddle them */}
-      {stringIndex === Math.floor(6 / 2) && isSingleDot && (
-        <div className="absolute top-[100%] left-1/2 -ml-3 -mt-3 w-6 h-6 rounded-full pearl-inlay z-0 pointer-events-none" />
+      {/* 👻 Chord Ghost Marker (Premium Highlight) */}
+      {isGhostMarker && (
+        <div className={cn(
+            "absolute w-4 h-4 rounded-full z-10 pointer-events-none transition-all duration-500",
+            isActive ? "scale-150 opacity-0" : "bg-amber-500/30 border border-amber-500/50 shadow-[0_0_15px_rgba(251,191,36,0.4)] animate-pulse"
+        )} />
       )}
-      {stringIndex === Math.floor(6 / 2) && isDoubleDot && (
-        <div className="absolute top-[100%] left-1/2 -ml-3 w-6 h-[400%] pointer-events-none flex flex-col justify-between -mt-10 py-1 z-0">
-          <div className="w-6 h-6 rounded-full pearl-inlay mx-auto" />
-          <div className="w-6 h-6 rounded-full pearl-inlay mx-auto" />
+
+      {stringIndex === 2 && isSingleDot && (
+        <div className="absolute top-[100%] left-1/2 -ml-2 -mt-2 w-4 h-4 rounded-full mother-of-pearl z-0 pointer-events-none opacity-80 shadow-md" />
+      )}
+      {stringIndex === 2 && isDoubleDot && (
+        <div className="absolute top-[100%] left-1/2 -ml-2 w-4 h-[420%] pointer-events-none flex flex-col justify-between -mt-12 py-2 z-0 opacity-80">
+          <div className="w-4 h-4 rounded-full mother-of-pearl mx-auto shadow-md" />
+          <div className="w-4 h-4 rounded-full mother-of-pearl mx-auto shadow-md" />
         </div>
       )}
 
-      {/* The Physcial Guitar String Shadow (Cast onto the wood) */}
-      <div 
-        className="absolute left-0 right-0 z-20 pointer-events-none opacity-60 mix-blend-multiply bg-black"
-        style={{ height: `${stringThickness + 2}px`, top: '50%', marginTop: `-${(stringThickness + 2) / 2 - 4}px`, filter: 'blur(2px)' }} 
-      />
-
-      {/* The Physical Guitar String */}
-      <div 
-        className={cn(
-          "absolute left-0 right-0 z-30 pointer-events-none transition-all duration-75",
-          isWound ? "string-wound" : "string-plain",
-          isActive ? `animate-vibrate-${Math.min(6, Math.max(1, Math.ceil(stringThickness / 1.5)))}` : ""
-        )}
-        style={{ height: `${stringThickness}px`, top: '50%', marginTop: `-${stringThickness/2}px` }}
-      />
-
-      {/* Note Label Pop (Only bright when pressed) */}
       <span className={cn(
-        "z-40 font-bold font-mono text-xs select-none transition-all duration-100",
-        isActive ? "text-orange-500 drop-shadow-[0_0_8px_rgb(249,115,22)] scale-125" : "text-white/0 group-hover:text-white/30"
+        "z-50 font-bold font-mono text-[8px] sm:text-[10px] select-none transition-all duration-150 tracking-tighter uppercase",
+        isActive ? "text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.9)] scale-110 opacity-100" : "text-white/0 group-hover:text-white/40 group-hover:scale-105"
       )}>
         {noteContent}
       </span>
-
     </div>
   );
-};
+});
 
 export default Fret;
