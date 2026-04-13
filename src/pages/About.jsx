@@ -48,15 +48,20 @@ const About = () => {
           </div>
 
           <div className="prose prose-invert max-w-none">
-            <h2 className="text-2xl font-bold mt-12 mb-4">Our Mission</h2>
+            <h2 className="text-2xl font-bold mt-12 mb-4 text-white">Our Mission & Vision</h2>
             <p className="text-zinc-400 leading-relaxed mb-6">
-              Our goal was to create a guitar simulator that doesn't just sound like a guitar, but *feels* like one. 
-              Whether you're practicing scales, experimenting with chords, or just wanting to play a quick tune while on the go, 
-              Virtual Guitar provides a professional-grade experience directly in your browser.
+              Virtual Guitar was born out of a desire to make music education accessible to everyone, everywhere. We realized that while there are many digital instruments available, few captured the tactile response and sonic depth produced by a real acoustic or electric guitar. Our mission is to bridge that gap using cutting-edge web technologies like the Web Audio API and specialized instrument sampling techniques.
+            </p>
+            <p className="text-zinc-400 leading-relaxed mb-6">
+              Whether you're practicing complex scales, experimenting with new chord progressions, or simply looking for a creative outlet during a break, our simulator provides a professional-grade environment. We believe that by lowering the barrier to entry for musical experimentation, we can help foster a new generation of musicians and enthusiasts.
+            </p>
+            
+            <h2 className="text-2xl font-bold mt-12 mb-4 text-white">The Technical Foundation</h2>
+            <p className="text-zinc-400 leading-relaxed mb-6">
+              Under the hood, Virtual Guitar utilizes the <strong>Virtuoso Studio Engine</strong>. This custom-built framework handles real-time audio synthesis with sub-10ms latency, ensuring that every pluck and strum feels immediate and natural. We use multi-velocity samples recorded in professional studios to ensure that the tonal character changes dynamically based on how you play.
             </p>
             <p className="text-zinc-400 leading-relaxed">
-              We continue to update our engine with new features, pedal effects, and high-quality instrument samples 
-              to ensure we remain the most realistic guitar tool on the web.
+              We continue to update our engine with new features, pedal effects, and high-quality instrument samples to ensure we remain the most realistic guitar tool on the web. Our roadmap includes social sharing of recordings, advanced pedalboard simulations, and AI-driven practice assistants.
             </p>
           </div>
         </section>

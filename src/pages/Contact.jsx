@@ -69,6 +69,35 @@ const Contact = () => {
             </button>
           </form>
         </div>
+        <div className="mt-20 text-left border-t border-white/5 pt-12">
+          <h2 className="text-3xl font-bold mb-8 text-white">Frequently Asked Questions</h2>
+          <div className="grid gap-8 sm:grid-cols-2">
+            <div>
+              <h4 className="text-red-500 font-semibold mb-2">How do I fix audio lag?</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                Ensure you are using a modern browser like Chrome or Edge. Check that No system-level audio enhancement software is running in the background.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-red-500 font-semibold mb-2">Can I record my sessions?</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                Recording is currently being integrated into the Virtuoso Engine. Stay tuned for our upcoming "Studio Session" update.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-red-500 font-semibold mb-2">My MIDI keyboard isn't working?</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                First, ensure your browser has permission to access MIDI devices. Refresh the page after plugging in your device to allow the Virtuoso Engine to detect it.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-red-500 font-semibold mb-2">Is this tool free for educators?</h4>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                Yes! Virtual Guitar is and will always remain free for educational purposes and personal practice.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
